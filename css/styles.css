@@ -1,7 +1,10 @@
 body {
     background-color:white;
     color:rgb(9, 48, 94);
-
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
 }
 
 header, nav, footer {
@@ -34,4 +37,35 @@ nav a:hover {
     color:orange;
     font-size: 2em;
     transition: .9s;
+}
+
+table {
+    margin: 0px auto;
+}
+
+td {
+    padding-right: 10px;
+    font-size: 1.3em;
+}
+
+td strong {
+    color: rgb(85, 77, 156);
+}
+
+#table-header {
+    background-color:rgb(20, 175, 136);
+} 
+
+.table-row {
+    background-color:rgb(158, 201, 190);
+}
+
+ul {
+    width: 500px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.interests {
+    color: rgba(109, 71, 247, 0.863);
 }
