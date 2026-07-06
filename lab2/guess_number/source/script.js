@@ -30,6 +30,9 @@ function initializeGame() {
 }
 
 function checkGuess() {
+    if (attempts >= maxAttempts) {
+        return;
+    }
     let guess = document.querySelector("#playerGuess").value;
     console.log("Player guess: " + guess);
     let feedback = document.querySelector("#feedback");
@@ -64,4 +67,9 @@ function checkGuess() {
             feedback.textContent = "Number is too low.";
         }
     }
+}
+
+function gameOver() {
+    document.querySelector("#guessBtn").style.display = "none";
+    document.querySelector("#resetBtn").style.display = "inline";
 }
