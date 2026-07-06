@@ -3,6 +3,9 @@ document.querySelector("#resetBtn").addEventListener("click", initializeGame);
 
 let randomNumber;
 let attempts = 0;
+let maxAttempts = 7;
+let wins = 0;
+let losses = 0;
 
 initializeGame();
 
@@ -20,6 +23,10 @@ function initializeGame() {
    feedback = document.querySelector("#playerGuess");
    feedback.textContent = "";
    document.querySelector("#guesses").textContent = "";
+
+   attempts = 0;
+   document.querySelector("#attemptsLeft").textContent = maxAttempts;
+
 }
 
 function checkGuess() {
@@ -32,11 +39,15 @@ function checkGuess() {
        return;
     }
     attempts++;
+    let attemptsLeft = maxAttempts - attempts;
+    document.querySelector("#attemptsLeft").textContent = attemptsLeft;
     console.log("Attempts: " + attempts);
     feedback.style.color = "orange";
     if (guess == randomNumber) {
         feedback.textContent = "You guessed correct! You win!";
         feedback.style.color = "darkgreen";
+        wins++;
+        document.querySelector("#wins").textContent = wins;
         gameOver();
     }
     else {
@@ -44,6 +55,8 @@ function checkGuess() {
         if(attempts == 7) {
             feedback.textContent = "Sorry, you lose.";
             feedback.style.color = "red";
+            losses++;
+            document.querySelector("#losses").textContent = losses;
             gameOver();
         } else if (guess > randomNumber) {
             feedback.textContent = "Number is too high.";

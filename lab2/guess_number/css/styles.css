@@ -1,0 +1,20 @@
+body {
+background-color:bisque;
+font-family: "Montserrat", sans-serif;
+font-optical-sizing: auto;
+font-weight: 300;
+font-style: normal;
+}
+
+#main, header {
+background-color: rgba(0, 0, 0, 0.7);
+color: rgb(11, 5, 37);
+padding: 15px;
+border-radius: 8px;
+width: fit-content;
+margin: 20px auto;
+}
+
+button {
+margin-top: 10px;
+}
