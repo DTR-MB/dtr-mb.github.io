@@ -20,7 +20,7 @@ function initializeGame() {
    let playerGuess = document.querySelector("#playerGuess");
    playerGuess.focus();
    playerGuess.value = "";
-   feedback = document.querySelector("#playerGuess");
+   feedback = document.querySelector("#feedback");
    feedback.textContent = "";
    document.querySelector("#guesses").textContent = "";
 
@@ -32,7 +32,7 @@ function initializeGame() {
 function checkGuess() {
     let guess = document.querySelector("#playerGuess").value;
     console.log("Player guess: " + guess);
-    let feedback = document.querySelector("#playerGuess");
+    let feedback = document.querySelector("#feedback");
     if(guess < 1 || guess > 99) {
        feedback.textContent = "Please enter a value between 1 & 99.";
        feedback.style.color = "red";
