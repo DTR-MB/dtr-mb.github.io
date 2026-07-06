@@ -1,17 +1,24 @@
 body {
-    background-color:rgb(26, 132, 253);
-    color:bisque;
+    background-color:white;
+    color:rgb(9, 48, 94);
 
 }
 
-header, main, nav, footer {
+header, nav, footer {
     text-align: center;
 }
 
 footer {
-    font-size: 0.75em;
-    color:blue
+    font-size: 0.8em;
+    color:rgb(44, 95, 4)
 }
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: justify;  
+ }
 
 nav a {
     padding: 15px;
@@ -19,17 +26,12 @@ nav a {
     font-size: 1.8em;
     font-weight: bold;
     text-decoration: none;
-    color: white;
+    color:rgb(9, 48, 94);
 }
 
 nav a:hover {
     border-bottom: 2px orange solid;
+    color:orange;
     font-size: 2em;
     transition: .9s;
 }
-
-main {
-    display: flex;
-    justify-content: center;
-    align-items: center;   
- }
