@@ -6,29 +6,30 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <link href="../guess_number/css/styles.css" rel="stylesheet">
+        <link href="../lab2/guess_number/css/styles.css" rel="stylesheet">
     </head>
     <body>
 
         <header>
             <h1>Guess the Number!</h1>
-            <h2>Guess a number between 1 and 99 in seven attempts!</h2>
+            <h2>Guess the correct number between 1 and 99 within seven attempts to win. GO!</h2>
         </header>
         <br>
         <div id="main">
-          Enter a guess: 
+          Enter a number: 
           <input type="text" id="playerGuess" size="5">         
           <button id="guessBtn"> Guess </button> <br>
           <button id="resetBtn"> Reset </button>
             <div id="feedback"></div>
-            <div>Previous Guesses:
+            <br>
+            <div>Previous Guess:
             <span id="guesses">
-            </span>
+            </span><br>
             <p>Attempts left: <span id="attemptsLeft">7</span></p>
             <p>Wins: <span id="wins">0</span> | Losses: <span id="losses">0</span></p>
             </div>
         </div>
         
-        <script src="../guess_number/source/script.js"></script> 
+        <script src="../lab2/guess_number/source/script.js"></script> 
     </body>
 </html>
