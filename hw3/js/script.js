@@ -1,110 +1,102 @@
 const form = document.getElementById("wcForm");
-const input = document.getElementById("competitionInput");
-const dropdown = document.getElementById("competitionSelect");
+const input = document.getElementById("searchInput");
+const dropdown = document.getElementById("leagueSelect");
 const error = document.getElementById("error");
 const results = document.getElementById("results");
 const matchesDiv = document.getElementById("matches");
 
-let competitionsData = [];
+let leagues = [];
 
-fetch("https://api.football-data.org/v4/competitions/")
-    .then(res => res.json())
-    .then(data => {
-        competitionsData = data.competitions;
 
-        data.competitions.forEach(comp => {
-            const option = document.createElement("option");
-            option.value = comp.code;
-            option.textContent = comp.name;
-            dropdown.appendChild(option);
-        });
-    });
+fetch("https://www.thesportsdb.com/api/v1/json/1/search_all_leagues.php?s=Soccer")
+  .then(res => res.json())
+  .then(data => {
+    leagues = data.countrys;
+
+
+    leagues
+      .filter(l => l.strLeague.toLowerCase().includes("world"))
+      .forEach(l => {
+        const option = document.createElement("option");
+        option.value = l.idLeague;
+        option.textContent = l.strLeague;
+        dropdown.appendChild(option);
+      });
+  });
+
 
 form.addEventListener("submit", function(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const textValue = input.value.trim().toLowerCase();
-    const selectedValue = dropdown.value;
+  const text = input.value.trim().toLowerCase();
+  const selected = dropdown.value;
 
-    results.innerHTML = "";
-    matchesDiv.innerHTML = "";
+  results.innerHTML = "";
+  matchesDiv.innerHTML = "";
 
-    if (textValue === "" && selectedValue === "") {
-        error.textContent = "Enter text OR choose a competition.";
-        return;
-    } else {
-        error.textContent = "";
-    }
+  if (text === "" && selected === "") {
+    error.textContent = "Enter search or select a league.";
+    return;
+  } else {
+    error.textContent = "";
+  }
 
-    let filtered = [];
+  let filtered = [];
 
-    if (selectedValue !== "") {
-        filtered = competitionsData.filter(c => c.code === selectedValue);
-    } else {
-        filtered = competitionsData.filter(c =>
-            c.name.toLowerCase().includes(textValue) ||
-            c.code.toLowerCase().includes(textValue)
-        );
-    }
+  if (selected !== "") {
+    filtered = leagues.filter(l => l.idLeague === selected);
+  } else {
+    filtered = leagues.filter(l =>
+      l.strLeague.toLowerCase().includes(text)
+    );
+  }
 
-    if (filtered.length === 0) {
-        results.innerHTML = "<p>No competitions found.</p>";
-        return;
-    }
+  if (filtered.length === 0) {
+    results.innerHTML = "<p>No leagues found.</p>";
+    return;
+  }
 
-    filtered.forEach(comp => {
-        const div = document.createElement("div");
-        div.classList.add("card");
+  filtered.forEach(l => {
+    const div = document.createElement("div");
+    div.classList.add("card");
 
-        div.innerHTML = `
-            <h3>${comp.name}</h3>
-            <p><strong>Code:</strong> ${comp.code}</p>
-            <p><strong>Region:</strong> ${comp.area.name}</p>
-            <img src="${comp.emblem}" alt="logo">
-        `;
+    div.innerHTML = `
+      <h3>${l.strLeague}</h3>
+      <p><strong>Sport:</strong> ${l.strSport}</p>
+      <p><strong>Country:</strong> ${l.strCountry}</p>
+    `;
 
-        results.appendChild(div);
+    results.appendChild(div);
 
-        if (comp.code === "WC") {
-            loadMatches();
-        }
-    });
+    loadMatches(l.idLeague, "2022");
+  });
 });
 
 
-function loadMatches() {
-    fetch("http://api.football-data.org/v4/competitions/WC/matches")
-        .then(res => res.json())
-        .then(data => {
+function loadMatches(leagueId, season) {
+  fetch(`https://www.thesportsdb.com/api/v1/json/1/eventsseason.php?id=${leagueId}&s=${season}`)
+    .then(res => res.json())
+    .then(data => {
 
-            const matches = data.matches;
+      if (!data.events) {
+        matchesDiv.innerHTML = "<p>No matches found.</p>";
+        return;
+      }
 
-            if (matches.length === 0) {
-                matchesDiv.innerHTML = "<p>No matches found.</p>";
-                return;
-            }
+      data.events.slice(0, 10).forEach(match => {
+        const div = document.createElement("div");
+        div.classList.add("match-card");
 
-            matches.slice(0, 10).forEach(match => {
+        div.innerHTML = `
+          <p><strong>${match.strHomeTeam}</strong> vs <strong>${match.strAwayTeam}</strong></p>
+          <p>Date: ${match.dateEvent}</p>
+          <p>Score: ${match.intHomeScore ?? "-"} : ${match.intAwayScore ?? "-"}</p>
+        `;
 
-                const home = match.homeTeam.name;
-                const away = match.awayTeam.name;
-                const date = new Date(match.utcDate).toLocaleDateString();
-                const score = match.score.fullTime;
-
-                const div = document.createElement("div");
-                div.classList.add("match-card");
-
-                div.innerHTML = `
-                    <p><strong>${home}</strong> vs <strong>${away}</strong></p>
-                    <p>Date: ${date}</p>
-                    <p>Score: ${score.home ?? "-"} : ${score.away ?? "-"}</p>
-                    <p>Status: ${match.status}</p>
-                `;
-
-                matchesDiv.appendChild(div);
-            });
-        })
-        .catch(err => {
-            matchesDiv.innerHTML = "<p>Error loading matches.</p>";
-        });
+        matchesDiv.appendChild(div);
+      });
+    })
+    .catch(() => {
+      matchesDiv.innerHTML = "<p>Error loading matches.</p>";
+    });
 }
