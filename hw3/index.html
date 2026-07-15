@@ -3,7 +3,7 @@
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>World Cup Finder</title>
+   <title>World Cup Dataa Lookup</title>
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -11,29 +11,30 @@
 </head>
 
 <body>
-<h1>Soccer Competitons Data</h1>
+
+<h1>FIFA World Cup Data Lookup</h1>
 
 <form id="wcForm">
-  <label>Search:
-    <input type="text" id="searchInput" placeholder="e.g. World Cup">
-  </label>
-  <span id="error"></span><br><br>
 
-  <label>Or Select League:
-    <select id="leagueSelect">
-      <option value="">-- Select League --</option>
-    </select>
-  </label><br><br>
+    <label>
+        Select World Cup:
+        <select id="yearSelect">
+            <option value="">-- Choose Year --</option>
+        </select>
+    </label>
 
-  <button type="submit">Search</button>
+    <br><br>
+
+    <button type="submit">
+        Find Matches
+    </button>
+
 </form>
 
-<hr>
+<div id="error"></div>
 
-<h2>League Info</h2>
-<div id="results"></div>
+<h2>Tournament Matches</h2>
 
-<h2>Match Data</h2>
 <div id="matches"></div>
 
 <script src="../hw3/js/script.js"></script>

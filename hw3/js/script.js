@@ -1,106 +1,196 @@
 const form = document.getElementById("wcForm");
-const input = document.getElementById("searchInput");
-const dropdown = document.getElementById("leagueSelect");
+const yearSelect = document.getElementById("yearSelect");
 const error = document.getElementById("error");
-const results = document.getElementById("results");
 const matchesDiv = document.getElementById("matches");
 
-let leagues = [];
+const worldCups = [];
 
-fetch("https://www.thesportsdb.com/api/v1/json/1/all_leagues.php")
-  .then(res => res.json())
-  .then(data => {
-    leagues = data.leagues;
+for (let year = 1990; year <= 2026; year += 4) {
+    worldCups.push(year);
+}
 
-    leagues
-      .filter(l =>
-        l.strSport === "Soccer" &&
-        l.strLeague.toLowerCase().includes("world")
-      )
-      .forEach(l => {
-        const option = document.createElement("option");
-        option.value = l.idLeague;
-        option.textContent = l.strLeague;
-        dropdown.appendChild(option);
-      });
-  })
-  .catch(err => {
-    console.error("Fetch error:", err);
-  });
-
-
-form.addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const text = input.value.trim().toLowerCase();
-  const selected = dropdown.value;
-
-  results.innerHTML = "";
-  matchesDiv.innerHTML = "";
-
-  if (text === "" && selected === "") {
-    error.textContent = "Enter search or select a league.";
-    return;
-  } else {
-    error.textContent = "";
-  }
-
-  let filtered = [];
-
-  if (selected !== "") {
-    filtered = leagues.filter(l => l.idLeague === selected);
-  } else {
-    filtered = leagues.filter(l =>
-      l.strLeague.toLowerCase().includes(text)
-    );
-  }
-
-  if (filtered.length === 0) {
-    results.innerHTML = "<p>No leagues found.</p>";
-    return;
-  }
-
-  filtered.forEach(l => {
-    const div = document.createElement("div");
-    div.classList.add("card");
-
-    div.innerHTML = `
-      <h3>${l.strLeague}</h3>
-      <p><strong>Sport:</strong> ${l.strSport}</p>
-      <p><strong>Country:</strong> ${l.strCountry}</p>
-    `;
-
-    results.appendChild(div);
-
-    loadMatches(l.idLeague, "2022");
-  });
+worldCups.forEach(year => {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent =
+        year === 2026
+        ? "World Cup 2026 (Upcoming)"
+        : `World Cup ${year}`;
+    yearSelect.appendChild(option);
 });
 
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    let year = yearSelect.value;
+    matchesDiv.innerHTML = "";
 
-function loadMatches(leagueId, season) {
-  fetch(`https://www.thesportsdb.com/api/v1/json/1/eventsseason.php?id=${leagueId}&s=${season}`)
-    .then(res => res.json())
+    if (year === "") {
+        error.textContent =
+            "Please select a World Cup year.";
+        return;
+    }
+
+    if (!worldCups.includes(Number(year))) {
+        error.textContent =
+            "Please select a valid World Cup year.";
+        return;
+    }
+
+    error.textContent = "";
+    loadMatches(year);
+});
+
+function loadMatches(year) {
+    const leagueID = 4429;
+    const url =
+    `https://www.thesportsdb.com/api/v1/json/123/eventsseason.php?id=${leagueID}&s=${year}`;
+
+    console.log("Fetching:", url);
+    fetch(url)
+        .then(response => {
+            console.log("Status:", response.status);
+
+            if (!response.ok) {
+                throw new Error(
+                    `API Error: ${response.status}`
+                );
+            }
+            return response.json();
+        })
+
+        .then(data => {
+            console.log("API Data:", data);
+            matchesDiv.innerHTML = "";
+
+            if (!data.events) {
+                matchesDiv.innerHTML =
+                `<p>No match data found for World Cup ${year}.</p>`;
+                return;
+            }
+
+            data.events.forEach(match => {
+                const card = document.createElement("div");
+                card.classList.add("match-card");
+                card.innerHTML = `
+
+                    <h3>
+                        ${match.strHomeTeam}
+                        vs
+                        ${match.strAwayTeam}
+                    </h3>
+
+                    <p>
+                        Date:
+                        ${match.dateEvent}
+                    </p>
+
+                    <p>
+                        Score:
+                        ${match.intHomeScore ?? "-"}
+                        -
+                        ${match.intAwayScore ?? "-"}
+                    </p>
+
+                    <button 
+                    class="details-btn"
+                    onclick="getMatchDetails('${match.idEvent}', this)">
+                    
+                    More Details
+                    
+                    </button>
+                    
+                    <div class="details"></div>
+                `;
+
+                matchesDiv.appendChild(card);
+            });
+        })
+
+        .catch(error => {
+            console.error(error);
+            matchesDiv.innerHTML =
+            `<p>${error.message}</p>`;
+        });
+}
+
+function getMatchDetails(eventID, button) {
+    const detailsDiv = button.nextElementSibling;
+
+    if (detailsDiv.innerHTML !== "") {
+        detailsDiv.innerHTML = "";
+        button.textContent = "More Details";
+        return;
+    }
+
+    button.textContent = "Loading...";
+
+    fetch(
+        `https://www.thesportsdb.com/api/v1/json/123/lookupevent.php?id=${eventID}`
+    )
+
+    .then(response => response.json())
     .then(data => {
 
-      if (!data.events) {
-        matchesDiv.innerHTML = "<p>No matches found.</p>";
-        return;
-      }
+        if (!data.events) {
+            detailsDiv.innerHTML =
+            "<p>No additional match information available.</p>";
 
-      data.events.slice(0, 10).forEach(match => {
-        const div = document.createElement("div");
-        div.classList.add("match-card");
+            button.textContent = "More Details";
+            return;
+        }
 
-        div.innerHTML = `
-          <p><strong>${match.strHomeTeam}</strong> vs <strong>${match.strAwayTeam}</strong></p>
-          <p>Date: ${match.dateEvent}</p>
-          <p>Score: ${match.intHomeScore ?? "-"} : ${match.intAwayScore ?? "-"}</p>
+        const match = data.events[0];
+        detailsDiv.innerHTML = `
+            <hr>
+
+            <h4>Match Details</h4>
+
+            <p>
+            <strong>Round:</strong>
+            ${match.strRound ?? "Not available"}
+            </p>
+
+            <p>
+            <strong>Group:</strong>
+            ${match.strGroup ?? "Knockout Stage"}
+            </p>
+
+            <p>
+            <strong>Home Goal Scorers:</strong>
+            ${match.strHomeGoalDetails ?? "No scorer data available"}
+            </p>
+
+            <p>
+            <strong>Away Goal Scorers:</strong>
+            ${match.strAwayGoalDetails ?? "No scorer data available"}
+            </p>
+
+            <p>
+            <strong>Venue:</strong>
+            ${match.strVenue ?? "Not available"}
+            </p>
+
+            <p>
+            <strong>Referee:</strong>
+            ${match.strOfficial ?? "Not available"}
+            </p>
+
+            <p>
+            <strong>Attendance:</strong>
+            ${match.intSpectators ?? "Not available"}
+            </p>
+
         `;
 
-        matchesDiv.appendChild(div);
-      });
+        button.textContent = "Hide Details";
     })
-    .catch(() => {
-      matchesDiv.innerHTML = "<p>Error loading matches.</p>";
+
+    .catch(error => {
+        console.error(error);
+        detailsDiv.innerHTML =
+        "<p>Error loading match details.</p>";
+
+        button.textContent = "More Details";
+
     });
 }
