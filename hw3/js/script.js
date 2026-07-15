@@ -7,21 +7,25 @@ const matchesDiv = document.getElementById("matches");
 
 let leagues = [];
 
-
-fetch("https://www.thesportsdb.com/api/v1/json/1/search_all_leagues.php?s=Soccer")
+fetch("https://www.thesportsdb.com/api/v1/json/1/all_leagues.php")
   .then(res => res.json())
   .then(data => {
-    leagues = data.countrys;
-
+    leagues = data.leagues;
 
     leagues
-      .filter(l => l.strLeague.toLowerCase().includes("world"))
+      .filter(l =>
+        l.strSport === "Soccer" &&
+        l.strLeague.toLowerCase().includes("world")
+      )
       .forEach(l => {
         const option = document.createElement("option");
         option.value = l.idLeague;
         option.textContent = l.strLeague;
         dropdown.appendChild(option);
       });
+  })
+  .catch(err => {
+    console.error("Fetch error:", err);
   });
 
 
