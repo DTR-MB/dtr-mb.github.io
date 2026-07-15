@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>World Cup Finder</title>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+   <link href="../hw3/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+<h1>Soccer Competitions & World Cup Data</h1>
+
+<form id="wcForm">
+  <label>Search Competition:
+    <input type="text" id="competitionInput" placeholder="e.g. World Cup">
+  </label>
+  <span id="error"></span><br><br>
+
+  <label>Or Select:
+    <select id="competitionSelect">
+      <option value="">-- Select Competition --</option>
+    </select>
+  </label><br><br>
+
+  <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<h2>Competition Info</h2>
+<div id="results"></div>
+
+<h2>Match Data</h2>
+<div id="matches"></div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
